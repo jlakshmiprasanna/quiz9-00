@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Selection</title>
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.9)),
+                url('https://static.vecteezy.com/system/resources/previews/001/310/865/large_2x/question-mark-on-dark-blue-background-free-vector.jpg') no-repeat center center;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            animation: fadeIn 1s ease-in-out;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .category {
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 30px;
+        }
+
+        .category h3 {
+            font-size: 1.4rem;
+            margin: 10px 0;
+            color: #ffcc00;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: #b7c2d6;
+            color: #2c3e50;
+            width: 160px;
+            height: 70px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 20px rgba(158, 127, 127, 0.3);
+            background-color: #dfe4ed;
+            color: #1a1a1a;
+        }
+
+        h4 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        #welcomeMessage {
+            border: 2px solid wheat;
+            position: absolute;
+            right: 20px;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .category h3 {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                width: 140px;
+                height: 60px;
+            }
+
+            h4 {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            .category h3 {
+                font-size: 1rem;
+            }
+
+            .card {
+                width: 120px;
+                height: 50px;
+            }
+
+            h4 {
+                font-size: 0.8rem;
+            }
+
+            #welcomeMessage {
+                right: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="welcomeMessage">Welcome!</h1><br>
+    <h2>Select a Language for the Quiz</h2>
+
+    <div class="category">
+        <h3>Front-end</h3>
+        <div class="card-container">
+            <div class="card" onclick="startQuiz('HTML')">
+                <h4>HTML</h4>
+            </div>
+            <div class="card" onclick="startQuiz('CSS')">
+                <h4>CSS</h4>
+            </div>
+            <div class="card" onclick="startQuiz('JavaScript')">
+                <h4>JavaScript</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>Back-end</h3>
+        <div class="card-container">
+            <div class="card" onclick="startQuiz('Java')">
+                <h4>Java</h4>
+            </div>
+            <div class="card" onclick="startQuiz('Python')">
+                <h4>Python</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>Critical Thinking</h3>
+        <div class="card-container">
+            <div class="card" onclick="startQuiz('Aptitude')">
+                <h4>Aptitude</h4>
+            </div>
+            <div class="card" onclick="startQuiz('ProblemSolving')">
+                <h4>Problem Solving</h4>
+            </div>
+            <div class="card" onclick="startQuiz('Communication')">
+                <h4>Communication</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>Databases</h3>
+        <div class="card-container">
+            <div class="card" onclick="startQuiz('Mysql')">
+                <h4>Mysql</h4>
+            </div>
+            <div class="card" onclick="startQuiz('MongoDB')">
+                <h4>MongoDB</h4>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to display the username
+        function displayUsername() {
+            const username = localStorage.getItem('username');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+
+            if (username) {
+                welcomeMessage.textContent = `Welcome, ${username}!`;
+            } else {
+                // If no username is found, redirect to login
+                alert('Please log in first!');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Function to start the quiz
+        function startQuiz(language) {
+            localStorage.setItem('selectedLanguage', language);
+            window.location.href = 'quiz_questions.html';
+        }
+
+        // Call the function on page load
+        displayUsername();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Questions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'lora', serif;
+            background-image: url(https://static.vecteezy.com/system/resources/previews/001/310/865/large_2x/question-mark-on-dark-blue-background-free-vector.jpg);
+            background-size: cover;
+            background-position: center center;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            height: 95vh;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .question-container {
+            margin: 20px auto;
+            background-color: #b7c2d6;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            background: #7598da;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            font-family: lucida;
+        }
+
+        .options button:hover {
+            background: #465572;
+            transform: scale(1.05);
+        }
+
+        /* .options button.correct {
+            background-color: #08ad2f !important;
+            color: white;
+        }
+
+        .options button.incorrect {
+            background-color: #dc3545 !important;
+            color: white;
+        } */
+
+        #timer {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 1.5em;
+        }
+
+        #quizTitle {
+            color: white;
+        }
+
+        #progress {
+            color: white;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        .question strong {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        /* Timer progress bar */
+        .timer-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: #007bff;
+            border-radius: 10px;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="quizTitle"></h2>
+    <div class="question-container">
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <p id="timer">Time Left: <span id="time">30</span> seconds</p>
+        <div class="timer-bar-container">
+            <div class="timer-bar" id="timerBar"></div>
+        </div>
+    </div>
+    <p id="progress"></p>
+    <button onclick="finishQuiz()">Finish Quiz</button>
+
+    <script>
+        const questions = {
+            HTML: [
+                { question: "Who invented HTML?", options: ["Tim Berners-Lee", "Bill Gates", "Larry Page", "Alan Turing"], answer: 0 },
+                { question: "What does HTML stand for?", options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "None"], answer: 0 },
+                { question: "What is HTML declarion?", options: ["<DOCTYPE!>", "<!DOCTYPE>", "<DOCTYPE>", "<=DOCTYPE>"], answer: 1 },
+                { question: "Choose the correct HTML element for the largest heading.", options: ["<heading>", "<h1>", "<h6>", "none"], answer: 1 },
+                { question: "Which of the following is the container for <tr>,<th> and <td>?", options: ["<data>", "<table>", "<group", "none of these"], answer: 1 },
+                { question: "Which tag is used to define an internal stylesheet in HTML?", options: ["<css>", "<link>", "<script>", "<style>"], answer: 3 },
+                { question: "How do you specify that an input field is required in a form?", options: ["mandatory attribute", "validate attribute", "required attribute", "none of these"], answer: 2 },
+                { question: "Which element is used to insert a line break in HTML?", options: ["<break>", "<lb>", "<cb>", "<br>"], answer: 3 },
+                { question: "What is the purpose of the id attribute?", options: ["To uniquely identify an element", "To style an element", "To create forms", "To group elements"], answer: 0 },
+                { question: " Which tag is used to create a paragraph in HTML?", options: ["<p>", "<para>", "<pg>", "paragraph"], answer: 0 },
+                { question: "What is SVG?", options: ["Scalable Vector Graphics", "Scalable Vector Graphical.", "Size Vector Graphics.", "Scalable View Graphics"], answer: 0 }, { question: "Which attribute is used to open a link in a new tab?", options: ["newTab", target = "_self", target = "_blank", tab = "new"], answer: 2 },
+                { question: "Which tag is used to embed a video in an HTML page?", options: ["<media>", "<embed>", "<video>", "<movie>"], answer: 2 },
+                { question: "Which tag is used to embed a audio in an HTML page?", options: ["<media>", "<embed>", "<audio>", "<movie>"], answer: 2 },
+                { question: "What is the default alignment of text in HTML?", options: ["center", "left", "right", "justify"], answer: 1 },
+                { question: "Which tag is used to create a hyperlink in HTML?", options: ["<a>", "<link>", "<href>", "<url>"], answer: 0 },
+                { question: "What attribute is used to specify the source of an image in HTML?", options: ["src", "source", "img", "link"], answer: 0 },
+                { question: "Which tag is used to define a list item in HTML?", options: ["<li>", "<ul>", "<ol>", "<item>"], answer: 0 },
+                { question: "How do you define a form in HTML?", options: ["<form>", "<input>", "<button>", "<fieldset>"], answer: 0 },
+                { question: "Which element is used to define a table in HTML?", options: ["<table>", "<tr>", "<th>", "<td>"], answer: 0 },
+                { question: "Which tag is used to add a comment in HTML?", options: ["<!-- comment -->", "<comment>", "<-- comment -->", "// comment"], answer: 0 },
+                { question: "Which tag is used to create an ordered list in HTML?", options: ["<ol>", "<ul>", "<list>", "<ol-item>"], answer: 0 },
+                { question: "Which tag is used to display a horizontal rule in HTML?", options: ["<hr>", "<line>", "<rule>", "<br>"], answer: 0 },
+                { question: "How do you add an external stylesheet to an HTML document?", options: ["<style>", "<css>", "<link>", "<script>"], answer: 2 },
+                { question: "Which attribute is used to specify the target of a hyperlink?", options: ["href", "target", "src", "link"], answer: 1 }
+            ],
+            CSS: [
+                { question: "What does CSS stand for?", options: ["Creative Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets", "none"], answer: 1 },
+                { question: "How do you select an element by its class in CSS?", options: ["#className", ".className", "*className", "&className"], answer: 1 },
+                { question: "Which property is used to change the background color?", options: ["color", "background-color", "bgcolor", "none"], answer: 1 },
+                { question: "How do you change the color of text in CSS?", options: ["color:red;", "text-color:red;", "font-color:red;", "text:red;"], answer: 0 },
+                { question: "How do you set the font size in CSS?", options: ["font-size: 16px;", "text-size: 16px;", "font:16px;", "text-font:16px;"], answer: 0 },
+                { question: "How do you add a border around an element in CSS?", options: ["border: 1px solid black;", "border-style: solid", "border-width: 1px;", "border-radius: 5px;"], answer: 0 },
+                { question: "Which property is used to control the space between elements in CSS?", options: ["padding", "margin", "spacing", "space-between"], answer: 1 },
+                { question: "Which property is used to set the space between the content of an element and its border?", options: ["padding", "margin", "spacing", "border"], answer: 0 },
+                { question: "What is the CSS property to change the font family of text?", options: ["font-type;", "text-type;", "font-style;", "font-family;"], answer: 3 },
+                { question: "How do you set the text alignment in CSS?", options: ["text-align:center;", "align:center;", "align-text:center;", "text:center;"], answer: 0 },
+                { question: "Which CSS property is used to set the width of an element?", options: ["size", "height", "size", "width"], answer: 3 },
+                { question: "How do you remove the underline from links in CSS?", options: ["underline: none;", "link-decoration: none;", "no-underline: true;", "text-decoration: none;"], answer: 3 },
+                { question: "How do you change the opacity of an element in CSS?", options: ["opacity: 0.5;", "transparent:0.5;", "visibility:0.5;", "fade:0.5;"], answer: 0 },
+                { question: "How do you set the height of an element in CSS?", options: ["height: 100px;", "width: 100px", "size: 100px;", "length: 100px"], answer: 0 },
+                { question: "How do you add a comment in CSS?", options: ["/* comment /", "// comment", "<!-- comment -->", "* comment **"], answer: 0 },
+                { question: "Which CSS property is used to change the font size?", options: ["font-size", "text-size", "font-style", "font-weight"], answer: 0 },
+                { question: "How do you center a block element horizontally in CSS?", options: ["margin: 0 auto;", "padding: 0 auto;", "text-align: center;", "center: auto;"], answer: 0 },
+                { question: "Which property is used to change the visibility of an element?", options: ["visibility", "opacity", "display", "none"], answer: 0 },
+                { question: "What is the default value of the 'position' property in CSS?", options: ["absolute", "relative", "static", "fixed"], answer: 2 },
+                { question: "How do you add space between the items in a flex container?", options: ["space-between", "justify-content", "flex-space", "margin"], answer: 1 },
+                { question: "What property would you use to change the font weight?", options: ["font-weight", "font-size", "font-style", "text-weight"], answer: 0 },
+                { question: "Which property is used to change the cursor when hovering over an element?", options: ["cursor", "pointer", "hover", "mouse"], answer: 0 },
+                { question: "How do you create a responsive design in CSS?", options: ["media queries", "viewport", "flexbox", "grid"], answer: 0 },
+                { question: "Which property is used to add shadow to text in CSS?", options: ["text-shadow", "box-shadow", "shadow", "border-shadow"], answer: 0 },
+                { question: "What is the value of 'display' property used to make an element invisible but still take up space?", options: ["none", "hidden", "visibility", "collapse"], answer: 1 }
+            ],
+            JavaScript: [
+                { question: "Inside which HTML element do we put the JavaScript?", options: ["<js>", "<script>", "<javascript>", "none"], answer: 1 },
+                { question: "What is the correct syntax for referring to an external script?", options: ["<script src='filename.js'>", "<script href='filename.js'>", "<script name='filename.js'>", "none"], answer: 0 },
+                { question: "What does JavaScript use to store multiple values in a single variable?", options: ["Arrays", "Objects", "Strings", "Functions"], answer: 0 },
+                { question: "Which symbol is used for single-line comments in JavaScript?", options: ["//", "/*", "<!--", "#"], answer: 0 },
+                { question: "How do you create a function in JavaScript?", options: ["function = myFunction()", "function myFunction()", "create function myFunction()", "func myFunction()"], answer: 1 },
+                { question: "What does NaN stand for in JavaScript?", options: ["Null and Notable", "Null and Notable", "Not a Number", "Not a Name"], answer: 2 },
+                { question: " Which method is used to remove the last item from an array in JavaScript?", options: ["array.pop()", "array.push()", "array.delete()", "array.remove()"], answer: 0 },
+                { question: "How can you convert a string to a number in JavaScript?", options: ["parseInt()", "parseFloat()", "Number()", "All of the above"], answer: 3 },
+                { question: "Which method is used to join two or more arrays in JavaScript?", options: ["array.concat()", "array.join()", "array.merge()", "array.push()"], answer: 0 },
+                { question: "Which method is used to find the index of an element in an array?", options: ["indexOf()", "find()", "index()", "getIndex()"], answer: 0 },
+                { question: "How can you stop a loop in JavaScript?", options: ["continue;", "return;", "exit;", "break"], answer: 3 },
+                { question: "Which of the following will return the value of the first element in an array?", options: ["array[0]", "array.first()", "array.get(0)", "array.firstElement()"], answer: 0 },
+                { question: "How do you access an element with the id demo in JavaScript?", options: ["document.getElementById()", "document.getElementByClass()", "document.querySelector()", "Both a and c"], answer: 0 & 3 },
+                { question: "Which method is used to remove the first element of an array in JavaScript?", options: ["array.pop()", "array.shift()", "array.remove()", "array.delete()"], answer: 1 },
+                { question: "What does console.log(typeof null); return in JavaScript?", options: ["null", "object", "undefined", "NaN"], answer: 1 },
+                { question: "What is the default value of a variable declared with 'let' but not assigned any value?", options: ["null", "undefined", "0", "NaN"], answer: 1 },
+                { question: "Which of the following is used to parse a JSON string into a JavaScript object?", options: ["JSON.parse()", "JSON.stringify()", "JSON.convert()", "JSON.object()"], answer: 0 },
+                { question: "Which operator is used to concatenate two strings in JavaScript?", options: ["&", "+", "%", "concat"], answer: 1 },
+                { question: "What is the result of 5 + '5' in JavaScript?", options: ["55", "10", "NaN", "error"], answer: 0 },
+                { question: "Which of the following is not a valid JavaScript data type?", options: ["undefined", "integer", "boolean", "symbol"], answer: 1 },
+                { question: "What will the expression '2' == 2 return in JavaScript?", options: ["true", "false", "error", "NaN"], answer: 0 },
+                { question: "What is the correct way to create a new array with the values 'apple', 'banana' in JavaScript?", options: ["new Array('apple', 'banana')", "['apple', 'banana']", "Array('apple', 'banana')", "[]"], answer: 1 },
+                { question: "Which of the following is the correct way to write a conditional statement in JavaScript?", options: ["if i == 5 then", "if i = 5", "if (i == 5)", "if (i = 5)"], answer: 2 },
+                { question: "Which method is used to check if an element exists in an array?", options: ["array.has()", "array.contains()", "array.includes()", "array.find()"], answer: 2 },
+                { question: "What is the result of '10' - 2 in JavaScript?", options: ["10", "12", "NaN", "8"], answer: 3 }
+            ],
+            Java: [
+
+
+                { question: "Who invented java", options: ["James Gosling", "Dennis Ritchie", "Bjarne Stroustrup", "Guido van Rossum"], answer: 0 },
+                { question: "What is Java?", options: ["A Operating system", "A Programming language", "A Database", "A Browser"], answer: 1 },
+                { question: "Which method is the entry point of a Java program?", options: ["main()", "start()", "init()", "run()"], answer: 0 },
+                { question: "Which extension is used for Java source files?", options: [".js", ".java", ".jav", ".class"], answer: 1 },
+                { question: "What does JVM stand for?", options: ["Java Version Manager", "Java Variable Monitor", "Java Virtual Machine", "Java View Module"], answer: 2 },
+                { question: "Which keyword is used to define a class in Java?", options: ["define", "create", "structure", "class"], answer: 3 },
+                { question: "Which company developed Java?", options: ["Sun Microsystems", "Microsoft", "Oracle", "Google"], answer: 0 },
+                { question: "Which of these is not a Java keyword?", options: ["static", "private", "integer", "final"], answer: 2 },
+                { question: "What is the default value of a boolean variable?", options: ["true", "false", "null", "undefined"], answer: 1 },
+                { question: "What is the size of an int in Java?", options: ["2 bytes", "4 bytes", "8 bytes", "Depends on the platform"], answer: 1 },
+                { question: "Which operator is used to concatenate strings in Java?", options: ["+", "-", "*", "@"], answer: 0 },
+                { question: "Which operator is used to compare two values in Java?", options: ["=", "= =", "= = =", "!="], answer: 1 },
+                { question: "Which loop is guaranteed to execute at least once?", options: ["for loop", "while loop", "do-while loop", "None of the above"], answer: 2 },
+                { question: "How are exceptions handled in Java?", options: ["Using try-catch blocks", "Using if-else statements", "Using error keyword", "None of the above"], answer: 0 },
+                { question: "Which of these data types can store decimal values?", options: ["int", "float", "char", "boolean"], answer: 1 },
+                { question: "What is the output of 10/3 in Java (integer division)?", options: ["3.33", "3", "Error", "None of the above"], answer: 0 },
+                { question: "Which package contains the core Java classes?", options: ["java.base", "java.util", "java.lang", "None of the above"], answer: 2 },
+                { question: "What does this keyword refer to?", options: ["Current object", "Parent object", "Current method", "Static variable"], answer: 0 },
+                { question: "How many values can a method return in Java?", options: ["1", "2", "0 or more", "Depends on the return type"], answer: 0 },
+                { question: "Which of these is not a valid access modifier?", options: ["public", "protected", "private", "extern"], answer: 3 },
+                { question: "hich class is used to read input from the user?", options: ["Scanner", "Reader", "InputReader", "BufferReader"], answer: 0 },
+                { question: "What is the output of 5 % 2?", options: ["2", "1", "5", "0"], answer: 0 },
+                { question: "Which of the following is a marker interface in Java?", options: ["serializable", "cloneable", "Both 1 and 2", "None of the above"], answer: 2 },
+                { question: "What does == operator do in Java?", options: ["Compares object references", "Compares values", "Checks equality of values for primitive types", "Depends on the context"], answer: 2 },
+                { question: "Which of the following is not a primitive data type in Java?", options: ["int", "float", "string", "char"], answer: 2 },
+            ],
+            Python: [
+                { question: "Who invented Python?", options: ["James Gosling", "Dennis Ritche", "Guido van rossum", "Bjarne Stroustrup"], answer: 2 },
+                { question: "What is Python?", options: ["A Programming Language", "A Database", "A Browser", "An Operating System"], answer: 0 },
+                { question: "Which method in Python is used to get the length of a string?", options: ["len()", "length()", "size()", "getSize()"], answer: 0 },
+                { question: "What is the correct file extension for Python files?", options: [".py", ".pyt", ".pyth", ".python"], answer: 0 },
+                { question: "Which of the following is an immutable data type in Python?", options: ["list", "dict", "tuple", "set"], answer: 2 },
+                { question: "Which of these data types does not allow duplicate values?", options: ["list", "tuple", "set", "dictionary"], answer: 2 },
+                { question: "Which operator is used for exponentiation in Python?", options: ["^", "", "^^", "exp"], answer: 1 },
+                { question: "How do you insert comments in Python?", options: ["# comment", "// comment", "/* comment */", "comment()"], answer: 0 },
+                { question: "Which of these is used to handle exceptions in Python?", options: ["try-catch", "catch-finally", "try-except", "except-try"], answer: 2 },
+                { question: "How do you define a function in Python?", options: ["function myFunc()", "def myFunc()", "def: myFunc()", "function: myFunc()"], answer: 1 },
+                { question: "Which of the following is the correct syntax for a lambda function?", options: ["lambda x: x + 2", "lambda: x + 2", "lambda(x): x + 2", "lambda(x, y): x + y"], answer: 0 },
+                { question: "Which method is used to remove whitespace from both ends of a string?", options: ["strip()", "trim()", "cut()", "whitespace()"], answer: 0 },
+                { question: "How do you declare a list in Python?", options: ["list = []", "list = ()", "list = {}", "list = list()"], answer: 0 },
+                { question: "How can you get the remainder of a division in Python?", options: ["//", "%", "/", ""], answer: 1 },
+                { question: "Which Python library is used for data manipulation and analysis?", options: ["NumPy", "Pandas", "Matplotlib", "Scikit-learn"], answer: 1 },
+                { question: "How do you check the type of a variable in Python?", options: ["type()", "typeof()", "varType()", "getType()"], answer: 0 },
+                { question: "What is the output of 5//2 in Python?", options: ["2", "2.5", "3", "None of the above"], answer: 0 },
+                { question: "Which of the following is the correct way to import a module in Python?", options: ["import module", "import module()", "from module import", "import(module)"], answer: 0 },
+                { question: "What does the break statement do in Python?", options: ["Exits the current loop", "Exits the program", "Returns a value", "None of the above"], answer: 0 },
+                { question: "What is the output of print(2**3) in Python?", options: ["6", "8", "16", "5"], answer: 1 },
+                { question: "Which function is used to open a file in Python?", options: ["open()", "file()", "read()", "write()"], answer: 0 },
+                { question: "What is the output of print(4 + 2 * 3)?", options: ["12", "10", "6", "8"], answer: 1 },
+                { question: "What is the correct way to create a dictionary in Python?", options: ["d = {}", "d = []", "d = ()", "d = dict()"], answer: 0 },
+                { question: "Which of these methods is used to add an item to a list in Python?", options: ["append()", "insert()", "add()", "push()"], answer: 0 },
+                { question: "Which Python keyword is used to create a class?", options: ["class", "def", "function", "create"], answer: 0 }
+            ],
+            Aptitude: [
+                { question: "What is the day of the week on 15th November 2024?", options: ["Thursday", "Monday", "Saturday", "Sunday"], answer: 1 },
+                { question: "If a car travels 60 km in 1 hour, how far will it travel in 4 hours?", options: ["120 km", "240 km", "180 km", "200 km"], answer: 1 },
+                { question: "What is the Simple Interest on a sum of Rs. 2000 at 5% annual interest for 2 years?", options: ["Rs. 100", "Rs. 200", "Rs. 150", "Rs. 50"], answer: 1 },
+                { question: "A man can row a boat in still water at 5 km/h. If the current speed is 3 km/h, what will be his speed downstream?", options: ["8 km/h", "6 km/h", "5 km/h", "7 km/h"], answer: 0 },
+                { question: "A person invests Rs. 5000 in a business, and after a year, he gets Rs. 500 as profit. What is the percentage profit?", options: ["10%", "12%", "15%", "20%"], answer: 0 },
+                { question: "If a train travels at 80 km/h, how long will it take to cover 160 km?", options: ["1 hour", "2 hours", "3 hours", "4 hours"], answer: 1 },
+                { question: "A clock gains 5 minutes every hour. How much time will it gain in a day (24 hours)?", options: ["120 minutes", "150 minutes", "180 minutes", "200 minutes"], answer: 0 },
+                { question: "A person spends 1/3 of his salary on rent and 1/4 on groceries. What fraction of his salary remains?", options: ["5/12", "7/12", "2/3", "3/4"], answer: 1 },
+                { question: "A boat goes 12 km upstream in 3 hours and 15 km downstream in 3 hours. What is the speed of the current?", options: ["2 km/h", "3 km/h", "4 km/h", "5 km/h"], answer: 1 },
+                { question: "A number is divisible by 9 if the sum of its digits is divisible by which number?", options: ["3", "6", "9", "12"], answer: 2 },
+                { question: "In a partnership, A and B invested Rs. 30000 and Rs. 40000 respectively. What is the share of A in a profit of Rs. 70000?", options: ["Rs. 30000", "Rs. 35000", "Rs. 40000", "Rs. 50000"], answer: 0 },
+                { question: "What is the profit percentage if an article is bought for Rs. 100 and sold for Rs. 150?", options: ["40%", "50%", "60%", "70%"], answer: 1 },
+                { question: "The ratio of the ages of A and B is 4:5. If B is 10 years older than A, what are their ages?", options: ["20 and 25", "18 and 22", "24 and 30", "28 and 35"], answer: 0 },
+                { question: "A person walks at 5 km/h. How long will he take to walk 15 km?", options: ["1 hour", "2 hours", "3 hours", "4 hours"], answer: 2 },
+                { question: "A discount of 10% is given on an article priced Rs. 500. What is the discounted price?", options: ["Rs. 450", "Rs. 400", "Rs. 350", "Rs. 500"], answer: 0 },
+                { question: "A man sold an item for Rs. 1200 at a profit of 20%. What was the cost price?", options: ["Rs. 1000", "Rs. 1100", "Rs. 900", "Rs. 950"], answer: 0 },
+                { question: "What is the compound interest on Rs. 1000 at 10% per annum for 2 years?", options: ["Rs. 100", "Rs. 110", "Rs. 120", "Rs. 121"], answer: 3 },
+                { question: "A man walks at 4 km/h. How long will it take him to walk 2.5 km?", options: ["30 minutes", "40 minutes", "50 minutes", "1 hour"], answer: 0 },
+                { question: "How much profit does a person make if he sells an item bought for Rs. 500 at Rs. 600?", options: ["Rs. 100", "Rs. 200", "Rs. 50", "Rs. 150"], answer: 0 },
+                { question: "A person travels 60 km in 3 hours. What is his speed?", options: ["10 km/h", "15 km/h", "20 km/h", "25 km/h"], answer: 1 },
+                { question: "A train crosses a bridge 120 m long in 20 seconds. What is the speed of the train?", options: ["6 m/s", "8 m/s", "10 m/s", "12 m/s"], answer: 2 },
+                { question: "A student scores 50 marks in a test. What percentage did he score?", options: ["50%", "60%", "70%", "80%"], answer: 0 },
+                { question: "What is the area of a rectangle with length 10 m and width 5 m?", options: ["50 m²", "60 m²", "40 m²", "100 m²"], answer: 0 },
+                { question: "A man buys an item for Rs. 500 and sells it for Rs. 550. What is the percentage profit?", options: ["10%", "20%", "30%", "40%"], answer: 0 },
+                { question: "A number is divisible by 12 if it is divisible by 3 and?", options: ["4", "5", "6", "7"], answer: 0 }
+            ],
+            ProblemSolving: [
+
+
+            ],
+            Communication: [
+                { question: "What is the primary purpose of communication?", options: ["To share information", "To argue", "To entertain", "To confuse"], answer: 0 },
+                { question: "Which is the most effective way to listen?", options: ["Interrupt frequently", "Focus on speaker", "Check your phone", "Think of responses"], answer: 1 },
+                { question: "What is nonverbal communication?", options: ["Speaking clearly", "Gestures and expressions", "Talking on the phone", "Writing emails"], answer: 1 },
+                { question: "What does active listening involve?", options: ["Avoiding eye contact", "Ignoring the speaker", "Responding thoughtfully", "Talking over others"], answer: 2 },
+                { question: "How can communication skills be improved?", options: ["Practice active listening", "Avoid speaking", "Ignore feedback", "Rely on assumptions"], answer: 0 },
+                { question: "Which of these is a form of digital communication?", options: ["Gesturing", "Emails", "Face-to-face conversation", "Phone call"], answer: 1 },
+                { question: "How can misunderstandings in communication be reduced?", options: ["Avoid speaking", "Assume understanding", "Clarify and confirm", "Speak less"], answer: 2 },
+                { question: "What is the role of body language in communication?", options: ["It replaces verbal communication", "It conveys emotions and attitudes", "It is irrelevant", "It distracts from the message"], answer: 1 },
+                { question: "What is the role of feedback in communication?", options: ["To end the conversation", "To confirm understanding", "To criticize the speaker", "To ignore the message"], answer: 1 },
+                { question: "How can one improve communication skills?", options: ["Avoiding feedback", "Listening more than talking", "Speaking loudly", "Ignoring misunderstandings"], answer: 1 },
+                { question: "What should you do if you don't understand someone's message?", options: ["Ignore it", "Ask for clarification", "Pretend to understand", "Respond anyway"], answer: 1 },
+                { question: "What is the main purpose of body language in communication?", options: ["To confuse the listener", "To express emotions and attitudes", "To avoid speaking", "To hide true feelings"], answer: "To express emotions and attitudes" },
+                { question: "How can you improve communication in a team?", options: ["By listening to each other", "By ignoring feedback", "By focusing only on your own work", "By avoiding discussions"], answer: 0 },
+                { question: "What is the role of empathy in communication?", options: ["To avoid conflicts", "To understand and share another person's feelings", "To dominate the conversation", "To ignore the listener's feelings"], answer: 1 },
+                { question: "Sending a letter is which type of communication?", options: ["Listening", "Writing", "Speaking", "Reading"], answer: 1 },
+                { question: "Prasanna is playing with football - Identify the verb", options: ["Prasanna", "Football", "Playing", "None of these"], answer: 2 },
+                { question: "__________ can be presented by face", options: ["Gestures", "Body Language", "Para Language", "Expressions"], answer: 3 },
+                { question: "The first language which we learn or speak as a child ___________", options: ["Jargon", "Diaclect", "Mother Tongue", "Vernacular"], answer: 2 },
+                { question: "The communication cycle does not include _________", options: ["sender", "message", "receiver", "programming"], answer: 3 },
+                { question: " __________ is not a communication barrier?", options: ["Language", "Culture", "Habits", "Physical"], answer: 2 },
+                { question: "__________ communication involves using words to convey a message.", options: ["Non-verbal", "Verbal", "Visual", "Written"], answer: 1 },
+                { question: "A key element of active listening is __________.", options: ["Interrupting the speaker", "Asking clarifying questions", "Ignoring the message", "Making judgments"], answer: 1 },
+                { question: "__________ is a barrier to communication caused by a lack of understanding of words or phrases.", options: ["Language barrier", "Emotional barrier", "Cultural barrier", "Physical barrier"], answer: 0 },
+                { question: "__________ is an example of a psychological barrier in communication.", options: ["Stress", "Noise", "Language", "Time constraints"], answer: 0 },
+                { question: "Which of the following is not a characteristic of effective communication?", options: ["Clear message", "Proper feedback", "Confusion", "Active listening"], answer: 2 }
+            ],
+            Mysql: [
+                { question: "Which of the following is NOT a valid MySQL data type?", options: ["VARCHAR", "TEXT", "STRING", "BLOB"], answer: 2 },
+                { question: "Which command is used to create a database in MySQL?", options: ["CREATE DATABASE", "ADD DATABASE", "INIT DATABASE", "NEW DATABASE"], answer: 0 },
+                { question: "What is the default port for MySQL?", options: ["3306", "8080", "1433", "1521"], answer: 0 },
+                { question: "What does the 'LIMIT' clause do in a MySQL query?", options: ["Restricts query execution time", "Limits the number of rows returned", "Restricts column access", "Specifies table constraints"], answer: 1 },
+                { question: "Which statement is used to update data in a MySQL table?", options: ["MODIFY", "UPDATE", "CHANGE", "ALTER"], answer: 1 },
+                { question: "Which of the following is a primary key constraint?", options: ["Ensures all column values are unique", "Prevents null values in a column", "Both A and B", "None of the above"], answer: 2 },
+                { question: "How do you delete a table in MySQL?", options: ["DELETE TABLE", "DROP TABLE", "REMOVE TABLE", "DESTROY TABLE"], answer: 1 },
+                { question: "Which function is used to calculate the total sum in a column?", options: ["SUM()", "ADD()", "TOTAL()", "COMBINE()"], answer: 0 },
+                { question: "Which clause is used to filter rows in a MySQL query?", options: ["WHERE", "FILTER", "HAVING", "ORDER BY"], answer: 0 },
+                { question: "What is a foreign key used for?", options: ["To link two tables together", "To generate a unique ID for a record", "To restrict duplicate data in a column", "None of the above"], answer: 0 },
+                { question: "Which function is used to find the highest value in a column?", options: ["MAX()", "TOP()", "HIGH()", "GREATEST()"], answer: 0 },
+                { question: "What is the correct syntax to rename a table in MySQL?", options: ["ALTER TABLE old_name RENAME TO new_name;", "RENAME old_name TO new_name;", "MODIFY TABLE old_name TO new_name;", "UPDATE TABLE old_name TO new_name;"], answer: 0 },
+                { question: "Which keyword is used to sort the result-set in ascending or descending order?", options: ["GROUP BY", "ORDER BY", "SORT BY", "FILTER BY"], answer: 1 },
+                { question: "Which function is used to count the number of rows in a table?", options: ["ROWS()", "COUNT()", "NUMROWS()", "TOTAL()"], answer: 1 },
+                { question: "What does 'TRUNCATE TABLE' do?", options: ["Deletes all rows from a table", "Deletes a table", "Removes duplicate rows", "Deletes specific rows"], answer: 0 },
+                { question: "Which operator is used for pattern matching in MySQL?", options: ["LIKE", "MATCH", "SEARCH", "FIND"], answer: 0 },
+                { question: "What does the 'GROUP BY' clause do in MySQL?", options: ["Filters rows", "Groups rows with the same values", "Sorts rows", "Adds rows"], answer: 1 },
+                { question: "What is the purpose of the 'HAVING' clause?", options: ["To filter rows before grouping", "To filter groups after grouping", "To limit the number of rows", "To rename columns"], answer: 1 },
+                { question: "What is a view in MySQL?", options: ["A temporary table", "A virtual table based on the result-set of an SQL statement", "A duplicate of a table", "A permanent copy of a table"], answer: 1 },
+                { question: "Which keyword is used to create an index in MySQL?", options: ["CREATE INDEX", "ADD INDEX", "SET INDEX", "INIT INDEX"], answer: 0 },
+                { question: "What does the 'AUTO_INCREMENT' keyword do?", options: ["Automatically increments a column value for each new record", "Automatically updates rows", "Creates a unique index", "Deletes duplicate rows"], answer: 0 },
+                { question: "What is the default storage engine in MySQL?", options: ["InnoDB", "MyISAM", "CSV", "MEMORY"], answer: 0 },
+                { question: "How do you remove duplicate rows from a query result?", options: ["DISTINCT", "REMOVE", "UNIQUE", "FILTER"], answer: 0 },
+                { question: "What does the 'ALTER TABLE' statement do?", options: ["Deletes a table", "Modifies an existing table structure", "Creates a new table", "Updates data in a table"], answer: 1 },
+                { question: "Which keyword is used to join tables in MySQL?", options: ["CONNECT", "LINK", "JOIN", "MERGE"], answer: 2 }
+            ],
+            MongoDB: [
+                { question: "What type of database is MongoDB?", options: ["Relational", "NoSQL", "Graph", "Key-Value"], answer: 1 },
+                { question: "Which data format does MongoDB use to store documents?", options: ["XML", "CSV", "JSON", "YAML"], answer: 2 },
+                { question: "What is the default port for MongoDB?", options: ["3306", "5432", "27017", "8080"], answer: 2 },
+                { question: "In MongoDB, a 'collection' is equivalent to what in relational databases?", options: ["Row", "Table", "Column", "Schema"], answer: 1 },
+                { question: "Which command is used to show all databases?", options: ["SHOW DATABASES", "db.getDatabases()", "listDatabases", "SHOW ALL"], answer: 1 },
+                { question: "What is the purpose of the '_id' field in MongoDB?", options: ["Primary key for a document", "To store metadata", "To define relationships", "To track updates"], answer: 0 },
+                { question: "Which command is used to insert a document into a collection?", options: ["db.collection.save()", "db.collection.insert()", "db.collection.push()", "db.collection.add()"], answer: 1 },
+                { question: "Which method retrieves all documents from a collection?", options: ["db.collection.get()", "db.collection.find()", "db.collection.retrieve()", "db.collection.show()"], answer: 1 },
+                { question: "Which query operator is used to match a specific field value?", options: ["$gt", "$eq", "$match", "$in"], answer: 1 },
+                { question: "Which query operator is used to match values greater than a specified value?", options: ["$gt", "$gte", "$lt", "$lte"], answer: 0 },
+                { question: "What does 'db.dropDatabase()' do?", options: ["Deletes a collection", "Deletes a document", "Deletes the current database", "Deletes multiple rows"], answer: 2 },
+                { question: "Which aggregation stage is used to group documents?", options: ["$group", "$match", "$sort", "$aggregate"], answer: 0 },
+                { question: "Which method is used to delete a single document?", options: ["db.collection.remove()", "db.collection.deleteOne()", "db.collection.deleteMany()", "db.collection.clear()"], answer: 1 },
+                { question: "What does the '$set' operator do in an update query?", options: ["Deletes a document", "Sets a new value for a field", "Adds a new field", "Renames a field"], answer: 1 },
+                { question: "Which index is created by default on a MongoDB collection?", options: ["Text Index", "Unique Index", "_id Index", "Hashed Index"], answer: 2 },
+                { question: "Which MongoDB shell command switches to a database?", options: ["USE dbName", "use dbName", "db.switch(dbName)", "db.change(dbName)"], answer: 1 },
+                { question: "Which command retrieves the first matching document?", options: ["db.collection.findOne()", "db.collection.find()", "db.collection.first()", "db.collection.match()"], answer: 0 },
+                { question: "How do you update multiple documents in MongoDB?", options: ["db.collection.updateMany()", "db.collection.modify()", "db.collection.save()", "db.collection.updateAll()"], answer: 0 },
+                { question: "What is the function of '$lookup' in aggregation?", options: ["Sorts documents", "Joins collections", "Filters documents", "Projects fields"], answer: 1 },
+                { question: "Which operator matches documents where a field exists?", options: ["$exists", "$in", "$not", "$elemMatch"], answer: 0 },
+                { question: "What does the 'find()' method return?", options: ["Single document", "Array of matching documents", "Metadata", "Nothing"], answer: 1 },
+                { question: "Which data type is NOT supported in MongoDB?", options: ["String", "Date", "Array", "Decimal"], answer: 3 },
+                { question: "How does MongoDB store relationships between collections?", options: ["Joins", "Embedded documents or references", "Foreign keys", "Hashmaps"], answer: 1 },
+                { question: "Which function is used to count documents in a collection?", options: ["db.collection.count()", "db.collection.countDocuments()", "db.collection.size()", "db.collection.total()"], answer: 1 },
+                { question: "What is the purpose of the '$unwind' stage in aggregation?", options: ["Groups documents", "Joins documents", "Flattens arrays into individual documents", "Sorts documents"], answer: 2 }
+            ]
+
+        };
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const language = localStorage.getItem('selectedLanguage') || 'Python';
+        const quizQuestions = questions[language];
+        const totalQuestions = quizQuestions.length;
+
+        document.getElementById('quizTitle').textContent = `Quiz: ${language}`;
+
+        function loadQuestion() {
+            if (currentQuestionIndex < totalQuestions) {
+                const currentQuestion = quizQuestions[currentQuestionIndex];
+                document.getElementById('question').innerHTML = `<strong>${currentQuestion.question}</strong>`;
+                const optionsContainer = document.getElementById('options');
+                optionsContainer.innerHTML = '';
+                currentQuestion.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.onclick = () => checkAnswer(index, button);
+                    optionsContainer.appendChild(button);
+                });
+                document.getElementById('progress').textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+                startTimer();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function checkAnswer(selectedIndex, button) {
+            const correctIndex = quizQuestions[currentQuestionIndex].answer;
+            if (selectedIndex === correctIndex) {
+                score++;
+                button.classList.add('correct');
+            } else {
+                button.classList.add('incorrect');
+            }
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 1000);
+        }
+
+        function startTimer() {
+            let timeLeft = 30;
+            document.getElementById('time').textContent = timeLeft;
+            document.getElementById('timerBar').style.width = '100%';
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft;
+                document.getElementById('timerBar').style.width = `${(timeLeft / 30) * 100}%`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }
+            }, 1000);
+        }
+
+        function finishQuiz() {
+            clearInterval(timer);
+            localStorage.setItem(`${language}_score`, `${score}/${totalQuestions}`);
+            document.body.innerHTML = `
+                <div>
+                    <h1>Quiz Completed!</h1>
+                    <p>Your Score: <strong>${score}/${totalQuestions}</strong></p>
+                    <p>${getMotivationalMessage(score, totalQuestions)}</p>
+                    <button onclick="startNewQuiz()">Choose Another Quiz</button>
+                </div>
+            `;
+        }
+
+        function getMotivationalMessage(score, totalQuestions) {
+            const percentage = (score / totalQuestions) * 100;
+            if (percentage === 100) return "Outstanding! You got a perfect score!";
+            if (percentage >= 80) return "Great job! You're doing awesome!";
+            if (percentage >= 50) return "Good effort! Keep improving!";
+            return "Don't worry! Try again, you'll get better!";
+        }
+
+        function startNewQuiz() {
+            window.location.href = 'quiz.html';
+        }
+
+        loadQuestion();
+    </script>
+</body>
+
+</html>
